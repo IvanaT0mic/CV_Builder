@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+
+@code {
+    private MudTheme CompanyTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0A0A33",
+            Secondary = "#3CD52E",
+            Success = "#3CD52E",
+            AppbarBackground = "#0A0A33",
+        }
+    };
+}
+
+<MudThemeProvider Theme="CompanyTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

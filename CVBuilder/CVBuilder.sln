@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37216.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVBuilder", "CVBuilder.csproj", "{33783D8E-969D-4FA6-8613-62A0A1450110}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CvBuilderWebV2", "..\CvBuilderWebV2\CvBuilderWebV2.csproj", "{B2F51465-F06D-46DF-A1E9-93E3E5CB17BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33783D8E-969D-4FA6-8613-62A0A1450110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33783D8E-969D-4FA6-8613-62A0A1450110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33783D8E-969D-4FA6-8613-62A0A1450110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33783D8E-969D-4FA6-8613-62A0A1450110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2F51465-F06D-46DF-A1E9-93E3E5CB17BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2F51465-F06D-46DF-A1E9-93E3E5CB17BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2F51465-F06D-46DF-A1E9-93E3E5CB17BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2F51465-F06D-46DF-A1E9-93E3E5CB17BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76BD6507-2637-4507-B0E3-9AFC86694327}
+	EndGlobalSection
+EndGlobal

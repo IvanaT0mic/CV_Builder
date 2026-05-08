@@ -9,9 +9,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddMudServices();
 
+var apiUrl = builder.Configuration["ApiUrl"];
+
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7111/")
+    BaseAddress = new Uri(apiUrl!)
 });
 
 await builder.Build().RunAsync();

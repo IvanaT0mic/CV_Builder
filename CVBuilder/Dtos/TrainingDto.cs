@@ -2,7 +2,7 @@
 {
     public sealed class TrainingDto
     {
-        public string TrainingName { get; set; }
-        public string TrainingDate { get; set; }
+        public string TrainingName { get; set; } = "";
+        public string TrainingDate { get; set; } = "";
     }
 }

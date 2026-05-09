@@ -1,0 +1,14 @@
+# Exclude local build artifacts - these contain Windows-specific paths
+# that break the Linux Docker build
+CVBuilder/obj/
+CVBuilder/bin/
+CvBuilderWebV2/obj/
+CvBuilderWebV2/bin/
+
+# Visual Studio local files
+**/.vs/
+**/*.user
+**/*.suo
+
+# Git
+.git/

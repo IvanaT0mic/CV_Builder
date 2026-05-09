@@ -1,0 +1,25 @@
+# ─── Stage 1: Build ───────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project file and restore dependencies (layer-cached separately)
+COPY CvBuilderWebV2/CvBuilderWebV2.csproj CvBuilderWebV2/
+RUN dotnet restore CvBuilderWebV2/CvBuilderWebV2.csproj
+
+# Copy the rest of the source and publish
+COPY CvBuilderWebV2/ CvBuilderWebV2/
+WORKDIR /src/CvBuilderWebV2
+RUN dotnet publish CvBuilderWebV2.csproj -c Release -o /app/publish
+
+# ─── Stage 2: Serve with nginx ────────────────────────────────────────────────
+FROM nginx:alpine AS runtime
+
+# Copy the published Blazor WASM output (static files)
+COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
+
+# Nginx config: serve index.html for all routes (required for Blazor client-side routing)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

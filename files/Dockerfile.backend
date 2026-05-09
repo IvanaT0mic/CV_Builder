@@ -1,0 +1,30 @@
+# ─── Stage 1: Build ───────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project file and restore dependencies (layer-cached separately)
+COPY CVBuilder/CVBuilder.csproj CVBuilder/
+RUN dotnet restore CVBuilder/CVBuilder.csproj
+
+# Copy the rest of the source and publish
+COPY CVBuilder/ CVBuilder/
+WORKDIR /src/CVBuilder
+RUN dotnet publish CVBuilder.csproj -c Release -o /app/publish
+
+# ─── Stage 2: Runtime ─────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Copy published output
+COPY --from=build /app/publish .
+
+# The CV_Template.docx is copied to output dir by the csproj (PreserveNewest)
+# so it will already be in /app/publish/Templates/CV_Template.docx
+
+EXPOSE 8080
+
+# Override URL binding so the app listens on 0.0.0.0 (required inside Docker)
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENTRYPOINT ["dotnet", "CVBuilder.dll"]

@@ -1,5 +1,5 @@
-1. instal docker desktop
+1. install docker desktop
 2. Open terminal in folder of project
 3. Type: docker compose up --build
-4. Open browser on: http://localhost:7111
-
+   3.1. Build will take some time no worries :D
+4. Open browser on: http://localhost:80

@@ -33,8 +33,8 @@ namespace CVBuilder.Services
 
             var replacements = new Dictionary<string, string>
             {
-                ["I_FIRST_NAME"] = data.FirstName ?? "",
-                ["I_LAST_NAME"] = data.LastName ?? "",
+                ["I_FIRST_NAME"] = data.FirstName?.ToUpper() ?? "",
+                ["I_LAST_NAME"] = data.LastName?.ToUpper() ?? "",
                 ["I_TITLE"] = data.Title ?? "",
                 ["I_ABOUT_ME_DESCRIPTION"] = data.AboutMe ?? "",
             };
@@ -233,7 +233,7 @@ namespace CVBuilder.Services
         private IEnumerable<OpenXmlElement> CreateProfileWithGrades(string profile, string colorHex, RunProperties? originalProperties)
         {
             var elements = new List<OpenXmlElement>();
-            var grade = 3; // Hardcoded value
+            var grade = 3;
 
             var textRun = new Run();
             if (originalProperties != null) textRun.AppendChild(originalProperties.CloneNode(true));

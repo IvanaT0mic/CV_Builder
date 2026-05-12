@@ -9,7 +9,7 @@
         public string Skills { get; set; }
         public string ToolStack { get; set; }
         public string Languages { get; set; }
-        public List<ProfileGradesDto> ProfileGrades { get; set; }
+        public string Profiles { get; set; }
         public List<ExperienceDto> Experiences { get; set; }
         public List<TrainingDto> Trainings { get; set; }
         public List<SocialDto> Socials { get; set; }

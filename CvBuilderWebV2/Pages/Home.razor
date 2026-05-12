@@ -6,40 +6,64 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8 mb-16">
     @* --- TITLE WITH LOGO --- *@
     <div class="d-flex align-center mb-8">
-        @* SVG Logo *@
         <img src="images/consulteer-logo.svg" style="width:50px; height:50px;" class="mr-4" alt="Company Logo" />
         <MudText Typo="Typo.h3" Style="color: #0A0A33; font-weight: bold;">CV Builder</MudText>
     </div>
 
+    @* Validation summary shown above submit *@
+    @if (showValidationErrors && validationErrors.Any())
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">
+            <ul>
+                @foreach (var err in validationErrors)
+                {
+                    <li>@err</li>
+                }
+            </ul>
+        </MudAlert>
+    }
+
     <MudGrid>
-        @* 1. PERSONAL INFO *@
+        @* 1. PERSONAL INFO — First Name, Last Name, Title are mandatory *@
         <MudItem xs="12" md="4">
-            <MudTextField @bind-Value="cvData.FirstName" Label="First Name" Variant="Variant.Outlined" />
+            @* The Label has a red star appended; Error/ErrorText shows validation message below the field *@
+            <MudTextField @bind-Value="cvData.FirstName"
+                          Label="First Name *"
+                          Variant="Variant.Outlined"
+                          Error="@(showValidationErrors && string.IsNullOrWhiteSpace(cvData.FirstName))"
+                          ErrorText="First Name is required" />
         </MudItem>
         <MudItem xs="12" md="4">
-            <MudTextField @bind-Value="cvData.LastName" Label="Last Name" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="cvData.LastName"
+                          Label="Last Name *"
+                          Variant="Variant.Outlined"
+                          Error="@(showValidationErrors && string.IsNullOrWhiteSpace(cvData.LastName))"
+                          ErrorText="Last Name is required" />
         </MudItem>
         <MudItem xs="12" md="4">
-            <MudTextField @bind-Value="cvData.Title" Label="Professional Title" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="cvData.Title"
+                          Label="Professional Title *"
+                          Variant="Variant.Outlined"
+                          Error="@(showValidationErrors && string.IsNullOrWhiteSpace(cvData.Title))"
+                          ErrorText="Professional Title is required" />
         </MudItem>
 
-        @* 2. ABOUT ME *@
+        @* 2. ABOUT ME — mandatory *@
         <MudItem xs="12">
-            <MudTextField @bind-Value="cvData.AboutMe" Label="About Me" Variant="Variant.Outlined" Lines="4" />
+            <MudTextField @bind-Value="cvData.AboutMe"
+                          Label="About Me *"
+                          Variant="Variant.Outlined"
+                          Lines="4"
+                          Error="@(showValidationErrors && string.IsNullOrWhiteSpace(cvData.AboutMe))"
+                          ErrorText="About Me is required" />
         </MudItem>
 
-        @* 3. PROFILE RATINGS (Optional Grade) *@
-        <MudItem xs="12">
-            <MudText Typo="Typo.h5" Class="mt-4 mb-2" Style="color: #0A0A33;">Profile Ratings</MudText>
-            @foreach (var grade in cvData.ProfileGrades)
-            {
-                <MudPaper Class="pa-3 mb-2 d-flex align-center gap-4" Elevation="1" Style="border-left: 6px solid #3CD52E;">
-                    <MudTextField @bind-Value="grade.Skill" Label="Skill Name" Style="flex:3" />
-                    <MudNumericField @bind-Value="grade.Grade" Label="Grade (1-5, Optional)" Min="1" Max="5" Clearable="true" Style="flex:1" />
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => cvData.ProfileGrades.Remove(grade))" />
-                </MudPaper>
-            }
-            <MudButton OnClick="AddGrade" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Text">+ Add Skill Rating</MudButton>
+        @* 3. PROFILE RATINGS — always 3 fixed squares per skill *@
+        <MudItem xs="12" md="4">
+            @* The Label has a red star appended; Error/ErrorText shows validation message below the field *@
+            <MudTextField @bind-Value="cvData.Profiles"
+                          Label="Profile "
+                          Variant="Variant.Outlined"/>
         </MudItem>
 
         @* 4. SKILLS *@
@@ -47,7 +71,7 @@
             <MudTextField @bind-Value="cvData.Skills" Label="Technical Skills (Comma separated)" Variant="Variant.Outlined" />
         </MudItem>
 
-        @* 5. WORK EXPERIENCE (Starts with 1 empty form) *@
+        @* 5. WORK EXPERIENCE *@
         <MudItem xs="12">
             <MudText Typo="Typo.h5" Class="mt-6 mb-2" Style="color: #0A0A33;">Work Experience</MudText>
             @foreach (var exp in cvData.Experiences)
@@ -79,29 +103,45 @@
                             <MudTextField @bind-Value="exp.ExpTechStack" Label="Tech Stack (e.g. .NET, Azure, SQL)" />
                         </MudItem>
 
+                        @* RESPONSIBILITIES — single textarea.
+                           Each line the user presses Enter on becomes a separate bullet.
+                           Paste of a paragraph → one bullet (no newlines = one item).
+                           The @bind-Value here binds to a per-experience raw string stored
+                           in responsibilitiesRaw; we convert to List<string> on submit. *@
                         <MudItem xs="12">
-                            <MudText Typo="Typo.subtitle2">Responsibilities:</MudText>
-                            @for (int i = 0; i < exp.ExpResponsibilities.Count; i++)
-                            {
-                                int index = i;
-                                <div class="d-flex align-center gap-2 mb-1">
-                                    <MudTextField @bind-Value="exp.ExpResponsibilities[index]" Label="@($"Point {index + 1}")" FullWidth />
-                                    <MudIconButton Icon="@Icons.Material.Filled.RemoveCircle" Color="Color.Error" OnClick="@(() => exp.ExpResponsibilities.RemoveAt(index))" Size="Size.Small" />
-                                </div>
-                            }
-                            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => exp.ExpResponsibilities.Add(""))" Color="Color.Secondary" Size="Size.Small">Add Point</MudButton>
+                            <MudText Typo="Typo.subtitle2" Class="mb-1">
+                                Responsibilities
+                                <MudText Typo="Typo.caption" Style="color: grey;">
+                                    — press Enter to create separate bullet points
+                                </MudText>
+                            </MudText>
+                            <MudTextField T="string"
+                                          Value="@GetResponsibilitiesRaw(exp)"
+                                          ValueChanged="@((string v) => SetResponsibilitiesRaw(exp, v))"
+                                          Label="Responsibilities"
+                                          Variant="Variant.Outlined"
+                                          Lines="5"
+                                          FullWidth="true"
+                                          AutoGrow="true" />
                         </MudItem>
 
                         <MudItem xs="12" Class="d-flex justify-end">
-                            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="@(() => cvData.Experiences.Remove(exp))">Remove Experience</MudButton>
+                            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                                       OnClick="@(() => { cvData.Experiences.Remove(exp); responsibilitiesRaw.Remove(exp); })">
+                                Remove Experience
+                            </MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
             }
-            <MudButton Variant="Variant.Filled" Color="Color.Dark" OnClick="AddExperience" StartIcon="@Icons.Material.Filled.Add" Style="background-color: #0A0A33; color: white;">Add Work Experience</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Dark" OnClick="AddExperience"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       Style="background-color: #0A0A33; color: white;">
+                Add Work Experience
+            </MudButton>
         </MudItem>
 
-        @* 6. SOCIALS & TRAINING (50/50 Split) *@
+        @* 6. SOCIALS & TRAINING *@
         <MudItem xs="12" md="6">
             <MudText Typo="Typo.h6" Style="color: #0A0A33;">Social Links & Portfolio</MudText>
             @foreach (var social in cvData.Socials)
@@ -128,7 +168,7 @@
             <MudButton OnClick="AddTraining" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" Color="Color.Secondary">Add Training</MudButton>
         </MudItem>
 
-        @* 7, 8, 9. DEGREE, SOFTWARE STACK, LANGUAGES *@
+        @* 7, 8, 9. EDUCATION, SOFTWARE STACK, LANGUAGES *@
         <MudItem xs="12">
             <MudText Typo="Typo.h5" Class="mt-4 mb-2" Style="color: #0A0A33;">Education / Degree</MudText>
             @foreach (var edu in cvData.Educations)
@@ -143,14 +183,14 @@
         </MudItem>
 
         <MudItem xs="12">
-            <MudTextField @bind-Value="cvData.ToolStack" Label="Software Stack(Comma separated)" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="cvData.ToolStack" Label="Software Stack (Comma separated)" Variant="Variant.Outlined" />
         </MudItem>
 
         <MudItem xs="12">
-            <MudTextField @bind-Value="cvData.Languages" Label="Languages(Comma separated)" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="cvData.Languages" Label="Languages (Comma separated)" Variant="Variant.Outlined" />
         </MudItem>
 
-        @* --- PRIMARY GENERATE BUTTON --- *@
+        @* --- GENERATE BUTTON --- *@
         <MudItem xs="12" Class="d-flex justify-center mt-10">
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
@@ -167,14 +207,62 @@
     private CVFieldValuesDto cvData = new()
     {
         Experiences = new List<ExperienceDto> { new ExperienceDto { ExpResponsibilities = new List<string> { "" } } },
-        ProfileGrades = new(),
         Trainings = new(),
         Socials = new(),
         Educations = new()
     };
 
+    // ── Validation ───────────────────────────────────────────────────────────
+    private bool showValidationErrors = false;
+    private List<string> validationErrors = new();
+
+    private bool Validate()
+    {
+        validationErrors.Clear();
+
+        if (string.IsNullOrWhiteSpace(cvData.FirstName))   validationErrors.Add("First Name is required.");
+        if (string.IsNullOrWhiteSpace(cvData.LastName))    validationErrors.Add("Last Name is required.");
+        if (string.IsNullOrWhiteSpace(cvData.Title))       validationErrors.Add("Professional Title is required.");
+        if (string.IsNullOrWhiteSpace(cvData.AboutMe))     validationErrors.Add("About Me is required.");
+
+        return validationErrors.Count == 0;
+    }
+
+    private Dictionary<ExperienceDto, string> responsibilitiesRaw = new();
+
+    private string GetResponsibilitiesRaw(ExperienceDto exp)
+    {
+        if (responsibilitiesRaw.TryGetValue(exp, out var raw))
+            return raw;
+
+        var initial = string.Join("\n", exp.ExpResponsibilities);
+        responsibilitiesRaw[exp] = initial;
+        return initial;
+    }
+
+    private void SetResponsibilitiesRaw(ExperienceDto exp, string value)
+    {
+        // Store the raw text.
+        responsibilitiesRaw[exp] = value ?? "";
+
+        exp.ExpResponsibilities = (value ?? "")
+            .Split('\n')
+            .Select(line => line.TrimEnd('\r').Trim())
+            .Where(line => !string.IsNullOrEmpty(line))
+            .ToList();
+
+        if (exp.ExpResponsibilities.Count == 0)
+            exp.ExpResponsibilities.Add("");
+    }
+
+    // ── Submit ───────────────────────────────────────────────────────────────
     private async Task GenerateCV()
     {
+        showValidationErrors = true;
+
+        if (!Validate())
+            return; // red asterisks & error messages are now visible
+
         var response = await Http.PostAsJsonAsync("cvBuilder/generate", cvData);
 
         if (response.IsSuccessStatusCode)
@@ -185,12 +273,18 @@
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "Check data");
+            await JS.InvokeVoidAsync("alert", "Something went wrong on the server. Check the data and try again.");
         }
     }
 
-    private void AddExperience() => cvData.Experiences.Add(new ExperienceDto { ExpResponsibilities = new() { "" } });
-    private void AddGrade() => cvData.ProfileGrades.Add(new ProfileGradesDto());
+    // ── Add helpers ──────────────────────────────────────────────────────────
+    private void AddExperience()
+    {
+        var exp = new ExperienceDto { ExpResponsibilities = new() { "" } };
+        cvData.Experiences.Add(exp);
+        responsibilitiesRaw[exp] = "";
+    }
+
     private void AddEducation() => cvData.Educations.Add(new EducationDto());
     private void AddTraining() => cvData.Trainings.Add(new TrainingDto());
     private void AddSocial() => cvData.Socials.Add(new SocialDto());

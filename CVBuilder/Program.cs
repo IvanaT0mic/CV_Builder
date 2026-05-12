@@ -1,3 +1,4 @@
+using CVBuilder.Middlewares;
 using CVBuilder.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("BlazorCors");
 app.UseAuthorization();
 
